@@ -54,7 +54,7 @@ export function Header() {
   const navItems = [
     { label: 'Home', view: 'home' as const },
     { label: 'Shop', view: 'shop' as const },
-    { label: 'Orders', view: 'orders' as const },
+    { label: 'Track Orders', view: 'orders' as const },
   ];
 
   return (
@@ -76,11 +76,14 @@ export function Header() {
           {navItems.map((item) => (
             <Button
               key={item.view}
-              variant="ghost"
+              variant={item.view === 'orders' ? 'outline' : 'ghost'}
               size="sm"
               onClick={() => handleNavClick(item.view)}
-              className="text-sm font-medium text-gray-700 hover:text-emerald-600 hover:bg-emerald-50"
+              className={item.view === 'orders' 
+                ? 'text-sm font-bold text-black border-black hover:bg-black hover:text-white transition-colors' 
+                : 'text-sm font-medium text-gray-700 hover:text-emerald-600 hover:bg-emerald-50'}
             >
+              {item.view === 'orders' && <Package className="mr-1.5 h-4 w-4" />}
               {item.label}
             </Button>
           ))}
@@ -207,10 +210,13 @@ export function Header() {
               {navItems.map((item) => (
                 <Button
                   key={item.view}
-                  variant="ghost"
+                  variant={item.view === 'orders' ? 'outline' : 'ghost'}
                   onClick={() => handleNavClick(item.view)}
-                  className="justify-start text-base font-medium"
+                  className={item.view === 'orders'
+                    ? 'justify-start text-base font-bold text-black border-black hover:bg-black hover:text-white transition-colors'
+                    : 'justify-start text-base font-medium'}
                 >
+                  {item.view === 'orders' && <Package className="mr-2 h-4 w-4" />}
                   {item.label}
                 </Button>
               ))}
