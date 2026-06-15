@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { Star, StarHalf } from 'lucide-react';
 
 interface StarRatingProps {
@@ -10,7 +11,7 @@ interface StarRatingProps {
 }
 
 export function StarRating({ rating, maxRating = 5, size = 16, className = '' }: StarRatingProps) {
-  const stars = [];
+  const stars: React.ReactElement[] = [];
   const roundedRating = Math.round(rating * 2) / 2;
 
   for (let i = 1; i <= maxRating; i++) {
