@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Package, Clock, ChevronRight, ShoppingBag } from 'lucide-react';
+import { Package, Clock, ChevronRight, ShoppingBag, LogIn } from 'lucide-react';
 import { useShopStore } from '@/store/use-shop-store';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -33,20 +33,20 @@ const statusColors: Record<string, string> = {
   cancelled: 'bg-red-100 text-red-700',
 };
 
-export function OrderHistory() {
+function OrderHistoryContent({ userId }: { userId: string }) {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-  const { sessionId, navigate } = useShopStore();
+  const navigate = useShopStore((s) => s.navigate);
 
   useEffect(() => {
-    fetch(`/api/orders?sessionId=${sessionId}`)
+    fetch(`/api/orders?userId=${userId}`)
       .then((res) => res.json())
       .then((data) => {
         setOrders(data);
         setLoading(false);
       })
       .catch(() => setLoading(false));
-  }, [sessionId]);
+  }, [userId]);
 
   if (loading) {
     return (
@@ -154,4 +154,39 @@ export function OrderHistory() {
       </div>
     </div>
   );
+}
+
+export function OrderHistory() {
+  const { user, openAuthModal } = useShopStore();
+
+  // Not logged in state
+  if (!user) {
+    return (
+      <div className="container mx-auto px-4 py-16">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex flex-col items-center justify-center text-center"
+        >
+          <div className="h-24 w-24 rounded-full bg-gray-100 flex items-center justify-center mb-6">
+            <LogIn className="h-10 w-10 text-gray-400" />
+          </div>
+          <h2 className="text-2xl font-bold mb-2">Please login to view your orders</h2>
+          <p className="text-muted-foreground mb-6 max-w-md">
+            Sign in to see your order history, track shipments, and manage returns.
+          </p>
+          <Button
+            size="lg"
+            className="bg-emerald-600 hover:bg-emerald-700 text-white"
+            onClick={() => openAuthModal('login')}
+          >
+            <LogIn className="mr-2 h-5 w-5" />
+            Login
+          </Button>
+        </motion.div>
+      </div>
+    );
+  }
+
+  return <OrderHistoryContent userId={user.id} />;
 }

@@ -6,6 +6,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const {
       sessionId,
+      userId,
       email,
       firstName,
       lastName,
@@ -20,6 +21,7 @@ export async function POST(request: NextRequest) {
 
     if (
       !sessionId ||
+      !userId ||
       !email ||
       !firstName ||
       !lastName ||
@@ -72,7 +74,7 @@ export async function POST(request: NextRequest) {
     // Create order with items
     const order = await db.order.create({
       data: {
-        sessionId,
+        userId,
         email,
         firstName,
         lastName,

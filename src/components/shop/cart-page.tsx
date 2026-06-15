@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Trash2, Minus, Plus, ShoppingBag, ArrowRight } from 'lucide-react';
+import { Trash2, Minus, Plus, ShoppingBag, ArrowRight, LogIn } from 'lucide-react';
 import { useShopStore } from '@/store/use-shop-store';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -18,6 +18,8 @@ export function CartPage() {
     removeFromCart,
     setCartFromServer,
     navigate,
+    user,
+    openAuthModal,
   } = useShopStore();
 
   // Sync cart from server on mount
@@ -74,6 +76,19 @@ export function CartPage() {
     });
   };
 
+  const handleProceedToCheckout = () => {
+    if (!user) {
+      openAuthModal('login');
+      toast({
+        title: 'Please login',
+        description: 'You need to login to proceed to checkout.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    navigate('checkout');
+  };
+
   if (cartItems.length === 0) {
     return (
       <div className="container mx-auto px-4 py-16">
@@ -105,6 +120,32 @@ export function CartPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-6">Shopping Cart ({cartCount} items)</h1>
+
+      {/* Login Banner */}
+      {!user && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-6 p-4 rounded-xl bg-amber-50 border border-amber-200 flex flex-col sm:flex-row items-center justify-between gap-3"
+        >
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
+              <LogIn className="h-5 w-5 text-amber-600" />
+            </div>
+            <div>
+              <p className="font-semibold text-amber-900">Please login to continue</p>
+              <p className="text-sm text-amber-700">Sign in to save your cart and proceed to checkout.</p>
+            </div>
+          </div>
+          <Button
+            className="bg-emerald-600 hover:bg-emerald-700 text-white shrink-0"
+            onClick={() => openAuthModal('login')}
+          >
+            <LogIn className="mr-2 h-4 w-4" />
+            Login
+          </Button>
+        </motion.div>
+      )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Cart Items */}
@@ -219,7 +260,7 @@ export function CartPage() {
             <Button
               size="lg"
               className="w-full mt-6 bg-emerald-600 hover:bg-emerald-700 text-white h-12"
-              onClick={() => navigate('checkout')}
+              onClick={handleProceedToCheckout}
             >
               Proceed to Checkout
               <ArrowRight className="ml-2 h-5 w-5" />

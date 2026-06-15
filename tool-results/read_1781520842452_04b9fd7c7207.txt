@@ -1,0 +1,526 @@
+     1→import { db } from '../src/lib/db';
+     2→
+     3→const categories = [
+     4→  {
+     5→    name: 'Electronics',
+     6→    slug: 'electronics',
+     7→    description: 'Latest gadgets, phones, laptops, and smart devices',
+     8→    image: 'https://images.unsplash.com/photo-1498049794561-7780e7231661?w=400&h=300&fit=crop',
+     9→  },
+    10→  {
+    11→    name: 'Fashion',
+    12→    slug: 'fashion',
+    13→    description: 'Trendy clothing, shoes, and accessories for all',
+    14→    image: 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=400&h=300&fit=crop',
+    15→  },
+    16→  {
+    17→    name: 'Home & Living',
+    18→    slug: 'home-living',
+    19→    description: 'Furniture, decor, and essentials for your home',
+    20→    image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&h=300&fit=crop',
+    21→  },
+    22→  {
+    23→    name: 'Sports & Outdoors',
+    24→    slug: 'sports-outdoors',
+    25→    description: 'Gear up for adventure and fitness',
+    26→    image: 'https://images.unsplash.com/photo-1461896836934-bd45ba8fcf9b?w=400&h=300&fit=crop',
+    27→  },
+    28→  {
+    29→    name: 'Books & Media',
+    30→    slug: 'books-media',
+    31→    description: 'Bestsellers, audiobooks, movies, and music',
+    32→    image: 'https://images.unsplash.com/photo-1495446815901-a7297e633e8d?w=400&h=300&fit=crop',
+    33→  },
+    34→  {
+    35→    name: 'Beauty & Health',
+    36→    slug: 'beauty-health',
+    37→    description: 'Skincare, makeup, wellness, and personal care',
+    38→    image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=400&h=300&fit=crop',
+    39→  },
+    40→];
+    41→
+    42→const products = [
+    43→  // ─── Electronics (10) ────────────────────────────────────────────────────
+    44→  {
+    45→    name: 'Pro Wireless Headphones',
+    46→    slug: 'pro-wireless-headphones',
+    47→    description: 'Premium noise-cancelling wireless headphones with 40-hour battery life, adaptive sound control, and crystal-clear audio. Features multi-device pairing, touch controls, and ultra-comfortable memory foam ear cushions.',
+    48→    price: 299.99, compareAtPrice: 399.99,
+    49→    images: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1583394838336-acd977736f90?w=600&h=600&fit=crop',
+    50→    categoryId: '', rating: 4.8, reviewCount: 2456, stock: 150, featured: true,
+    51→  },
+    52→  {
+    53→    name: 'Smart Watch Ultra',
+    54→    slug: 'smart-watch-ultra',
+    55→    description: 'Advanced smartwatch with always-on AMOLED display, health monitoring suite, GPS tracking, and 7-day battery life. Water resistant to 100m with titanium case.',
+    56→    price: 449.99, compareAtPrice: 549.99,
+    57→    images: 'https://images.unsplash.com/photo-1546868871-af0de0ae72be?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=600&h=600&fit=crop',
+    58→    categoryId: '', rating: 4.7, reviewCount: 1832, stock: 80, featured: true,
+    59→  },
+    60→  {
+    61→    name: '4K Ultra HD Monitor',
+    62→    slug: '4k-ultra-hd-monitor',
+    63→    description: 'Stunning 32-inch 4K UHD monitor with HDR600, 144Hz refresh rate, and 1ms response time. Perfect for gaming and creative work with 98% DCI-P3 color gamut.',
+    64→    price: 599.99, compareAtPrice: 799.99,
+    65→    images: 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1585792180666-f7347c490ee2?w=600&h=600&fit=crop',
+    66→    categoryId: '', rating: 4.6, reviewCount: 987, stock: 45, featured: true,
+    67→  },
+    68→  {
+    69→    name: 'Portable Bluetooth Speaker',
+    70→    slug: 'portable-bluetooth-speaker',
+    71→    description: 'Waterproof portable speaker with 360° immersive sound, 24-hour playtime, and built-in microphone. Perfect for outdoor adventures with IP67 rating.',
+    72→    price: 129.99, compareAtPrice: 179.99,
+    73→    images: 'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1589003077984-894e133dabab?w=600&h=600&fit=crop',
+    74→    categoryId: '', rating: 4.5, reviewCount: 3241, stock: 200, featured: false,
+    75→  },
+    76→  {
+    77→    name: 'Wireless Charging Pad',
+    78→    slug: 'wireless-charging-pad',
+    79→    description: 'Fast wireless charging pad compatible with all Qi-enabled devices. Sleek design with LED indicator and overheat protection. Supports up to 15W fast charging.',
+    80→    price: 39.99, compareAtPrice: null,
+    81→    images: 'https://images.unsplash.com/photo-1591815302525-756a9bcc3425?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1586953208270-767889fa9b0e?w=600&h=600&fit=crop',
+    82→    categoryId: '', rating: 4.3, reviewCount: 1567, stock: 300, featured: false,
+    83→  },
+    84→  {
+    85→    name: 'Mechanical Gaming Keyboard',
+    86→    slug: 'mechanical-gaming-keyboard',
+    87→    description: 'RGB mechanical keyboard with hot-swappable switches, PBT keycaps, and programmable macros. Features USB-C connection and aircraft-grade aluminum frame.',
+    88→    price: 169.99, compareAtPrice: 199.99,
+    89→    images: 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1618384887929-16ec33fab9ef?w=600&h=600&fit=crop',
+    90→    categoryId: '', rating: 4.7, reviewCount: 2134, stock: 120, featured: false,
+    91→  },
+    92→  {
+    93→    name: 'Drone Camera 4K',
+    94→    slug: 'drone-camera-4k',
+    95→    description: 'Professional-grade 4K drone with 3-axis gimbal stabilization, 40-minute flight time, obstacle avoidance sensors, and intelligent flight modes. Foldable design with carrying case.',
+    96→    price: 899.99, compareAtPrice: 1099.99,
+    97→    images: 'https://images.unsplash.com/photo-1507582020474-9a35b7d455d9?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=600&h=600&fit=crop',
+    98→    categoryId: '', rating: 4.8, reviewCount: 1456, stock: 25, featured: true,
+    99→  },
+   100→  {
+   101→    name: 'Wireless Gaming Mouse',
+   102→    slug: 'wireless-gaming-mouse',
+   103→    description: 'Ultra-lightweight wireless gaming mouse with 25K DPI sensor, 70-hour battery, and optical switches. Ergonomic design with customizable RGB and 5 programmable buttons.',
+   104→    price: 89.99, compareAtPrice: 119.99,
+   105→    images: 'https://images.unsplash.com/photo-1527814050087-3793815479db?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=600&h=600&fit=crop',
+   106→    categoryId: '', rating: 4.6, reviewCount: 3789, stock: 175, featured: false,
+   107→  },
+   108→  {
+   109→    name: 'Action Camera Waterproof',
+   110→    slug: 'action-camera-waterproof',
+   111→    description: 'Rugged action camera shooting 5.3K video at 60fps with HyperSmooth stabilization. Waterproof to 33ft, voice-controlled, with dual LCD screens and live streaming.',
+   112→    price: 349.99, compareAtPrice: 429.99,
+   113→    images: 'https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1615886541776-3b271e14c079?w=600&h=600&fit=crop',
+   114→    categoryId: '', rating: 4.7, reviewCount: 2567, stock: 65, featured: true,
+   115→  },
+   116→  {
+   117→    name: 'USB-C Hub Multiport',
+   118→    slug: 'usb-c-hub-multiport',
+   119→    description: '12-in-1 USB-C hub with dual HDMI 4K@60Hz, 100W PD charging, Gigabit Ethernet, SD/microSD readers, and 3 USB 3.0 ports. Aluminum housing with thermal management.',
+   120→    price: 59.99, compareAtPrice: null,
+   121→    images: 'https://images.unsplash.com/photo-1625842268584-8f3296236761?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600&h=600&fit=crop',
+   122→    categoryId: '', rating: 4.4, reviewCount: 1890, stock: 400, featured: false,
+   123→  },
+   124→
+   125→  // ─── Fashion (9) ────────────────────────────────────────────────────────
+   126→  {
+   127→    name: 'Classic Leather Jacket',
+   128→    slug: 'classic-leather-jacket',
+   129→    description: 'Handcrafted genuine leather jacket with premium lining and timeless design. Features multiple pockets, YKK zippers, and adjustable cuffs for the perfect fit.',
+   130→    price: 249.99, compareAtPrice: 349.99,
+   131→    images: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1520975954732-35dd22299614?w=600&h=600&fit=crop',
+   132→    categoryId: '', rating: 4.6, reviewCount: 876, stock: 35, featured: true,
+   133→  },
+   134→  {
+   135→    name: 'Running Sneakers Pro',
+   136→    slug: 'running-sneakers-pro',
+   137→    description: 'Ultra-lightweight running shoes with responsive cushioning and breathable mesh upper. Engineered for performance with carbon fiber plate and energy return foam.',
+   138→    price: 179.99, compareAtPrice: 219.99,
+   139→    images: 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1608231387042-66d1773070a5?w=600&h=600&fit=crop',
+   140→    categoryId: '', rating: 4.8, reviewCount: 4521, stock: 90, featured: true,
+   141→  },
+   142→  {
+   143→    name: 'Premium Denim Jeans',
+   144→    slug: 'premium-denim-jeans',
+   145→    description: 'Premium stretch denim jeans with modern slim fit. Made from organic cotton with reinforced stitching and vintage wash finish.',
+   146→    price: 89.99, compareAtPrice: null,
+   147→    images: 'https://images.unsplash.com/photo-1542272604-787c3835535d?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=600&h=600&fit=crop',
+   148→    categoryId: '', rating: 4.4, reviewCount: 2345, stock: 150, featured: false,
+   149→  },
+   150→  {
+   151→    name: 'Designer Sunglasses',
+   152→    slug: 'designer-sunglasses',
+   153→    description: 'Polarized designer sunglasses with UV400 protection and lightweight titanium frame. Includes premium carrying case and microfiber cloth.',
+   154→    price: 159.99, compareAtPrice: 199.99,
+   155→    images: 'https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1511499767150-a48a237f0083?w=600&h=600&fit=crop',
+   156→    categoryId: '', rating: 4.5, reviewCount: 1234, stock: 60, featured: false,
+   157→  },
+   158→  {
+   159→    name: 'Canvas Backpack',
+   160→    slug: 'canvas-backpack',
+   161→    description: 'Durable waxed canvas backpack with leather accents, padded laptop compartment, and multiple organizer pockets. Perfect for daily commute or weekend trips.',
+   162→    price: 79.99, compareAtPrice: null,
+   163→    images: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1581605405669-fcdf81165b94?w=600&h=600&fit=crop',
+   164→    categoryId: '', rating: 4.6, reviewCount: 3421, stock: 110, featured: false,
+   165→  },
+   166→  {
+   167→    name: 'Wool Blend Overcoat',
+   168→    slug: 'wool-blend-overcoat',
+   169→    description: 'Luxurious Italian wool blend overcoat with satin lining, notch lapel, and two-button closure. Tailored fit with interior pockets and vented back.',
+   170→    price: 329.99, compareAtPrice: 449.99,
+   171→    images: 'https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1544022613-e87ca75a784a?w=600&h=600&fit=crop',
+   172→    categoryId: '', rating: 4.7, reviewCount: 654, stock: 28, featured: true,
+   173→  },
+   174→  {
+   175→    name: 'Casual Linen Shirt',
+   176→    slug: 'casual-linen-shirt',
+   177→    description: '100% European linen shirt with relaxed fit, mother-of-pearl buttons, and garment-washed softness. Breathable fabric perfect for warm weather.',
+   178→    price: 64.99, compareAtPrice: null,
+   179→    images: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1598033129183-c4f50c736c10?w=600&h=600&fit=crop',
+   180→    categoryId: '', rating: 4.5, reviewCount: 1876, stock: 200, featured: false,
+   181→  },
+   182→  {
+   183→    name: 'Leather Belt Classic',
+   184→    slug: 'leather-belt-classic',
+   185→    description: 'Full-grain leather belt with brushed stainless steel buckle. Hand-stitched edges and 1.25-inch width. Available in black, brown, and tan.',
+   186→    price: 44.99, compareAtPrice: 59.99,
+   187→    images: 'https://images.unsplash.com/photo-1624222247344-550fb60583dc?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&h=600&fit=crop',
+   188→    categoryId: '', rating: 4.4, reviewCount: 2876, stock: 300, featured: false,
+   189→  },
+   190→  {
+   191→    name: 'Silk Tie Collection',
+   192→    slug: 'silk-tie-collection',
+   193→    description: 'Set of 3 premium silk ties with matching pocket squares. Handmade with Italian silk, featuring classic patterns and rich colors for every occasion.',
+   194→    price: 74.99, compareAtPrice: 99.99,
+   195→    images: 'https://images.unsplash.com/photo-1589756823695-278bc923a203?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1593030761757-71fae45fa0e7?w=600&h=600&fit=crop',
+   196→    categoryId: '', rating: 4.3, reviewCount: 987, stock: 85, featured: false,
+   197→  },
+   198→
+   199→  // ─── Home & Living (9) ──────────────────────────────────────────────────
+   200→  {
+   201→    name: 'Smart Home Speaker',
+   202→    slug: 'smart-home-speaker',
+   203→    description: 'Voice-controlled smart speaker with premium sound quality, smart home hub, and multi-room audio support. Compatible with all major smart home platforms.',
+   204→    price: 99.99, compareAtPrice: 129.99,
+   205→    images: 'https://images.unsplash.com/photo-1558089687-f282ffcbc126?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1543512214-318c7553f230?w=600&h=600&fit=crop',
+   206→    categoryId: '', rating: 4.4, reviewCount: 5678, stock: 200, featured: true,
+   207→  },
+   208→  {
+   209→    name: 'Scented Candle Set',
+   210→    slug: 'scented-candle-set',
+   211→    description: 'Luxury soy wax candle set with 6 seasonal scents. Hand-poured with natural essential oils, cotton wicks, and up to 50 hours burn time each.',
+   212→    price: 49.99, compareAtPrice: 69.99,
+   213→    images: 'https://images.unsplash.com/photo-1602607912093-fbc049d37744?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1603199506016-5f36e6d72b0c?w=600&h=600&fit=crop',
+   214→    categoryId: '', rating: 4.7, reviewCount: 2189, stock: 180, featured: false,
+   215→  },
+   216→  {
+   217→    name: 'Modern Table Lamp',
+   218→    slug: 'modern-table-lamp',
+   219→    description: 'Minimalist LED table lamp with touch dimmer, color temperature adjustment, and wireless charging base. Sustainable bamboo and aluminum design.',
+   220→    price: 79.99, compareAtPrice: null,
+   221→    images: 'https://images.unsplash.com/photo-1507473885765-e6ed057ab6fe?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1513506003901-1e6a229e2d15?w=600&h=600&fit=crop',
+   222→    categoryId: '', rating: 4.5, reviewCount: 876, stock: 70, featured: false,
+   223→  },
+   224→  {
+   225→    name: 'Luxury Bed Sheet Set',
+   226→    slug: 'luxury-bed-sheet-set',
+   227→    description: '1000-thread-count Egyptian cotton sheet set with sateen weave. Includes flat sheet, fitted sheet, and 4 pillowcases. Hypoallergenic and ultra-soft.',
+   228→    price: 129.99, compareAtPrice: 189.99,
+   229→    images: 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=600&h=600&fit=crop',
+   230→    categoryId: '', rating: 4.8, reviewCount: 3456, stock: 95, featured: false,
+   231→  },
+   232→  {
+   233→    name: 'Robot Vacuum Cleaner',
+   234→    slug: 'robot-vacuum-cleaner',
+   235→    description: 'AI-powered robot vacuum with LiDAR navigation, self-emptying base, and mopping function. App-controlled with scheduling and room mapping.',
+   236→    price: 399.99, compareAtPrice: 549.99,
+   237→    images: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1603618090554-a7422dfa9a20?w=600&h=600&fit=crop',
+   238→    categoryId: '', rating: 4.6, reviewCount: 2876, stock: 55, featured: true,
+   239→  },
+   240→  {
+   241→    name: 'Ceramic Plant Pot Set',
+   242→    slug: 'ceramic-plant-pot-set',
+   243→    description: 'Set of 4 handcrafted ceramic plant pots in varying sizes with drainage holes and saucers. Matte finish in earth tones, perfect for indoor herbs and succulents.',
+   244→    price: 54.99, compareAtPrice: null,
+   245→    images: 'https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?w=600&h=600&fit=crop',
+   246→    categoryId: '', rating: 4.6, reviewCount: 1567, stock: 140, featured: false,
+   247→  },
+   248→  {
+   249→    name: 'Espresso Coffee Machine',
+   250→    slug: 'espresso-coffee-machine',
+   251→    description: 'Automatic espresso machine with 15-bar pump, built-in grinder, milk frother, and programmable settings. Brews barista-quality coffee at home with one touch.',
+   252→    price: 349.99, compareAtPrice: 499.99,
+   253→    images: 'https://images.unsplash.com/photo-1517668808822-9ebb02f2a0e6?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=600&h=600&fit=crop',
+   254→    categoryId: '', rating: 4.7, reviewCount: 4231, stock: 40, featured: true,
+   255→  },
+   256→  {
+   257→    name: 'Throw Blanket Knit',
+   258→    slug: 'throw-blanket-knit',
+   259→    description: 'Chunky knit throw blanket made from 100% organic cotton. Oversized 50x60 inch design, machine washable, and incredibly soft. Perfect for cozy evenings.',
+   260→    price: 69.99, compareAtPrice: null,
+   261→    images: 'https://images.unsplash.com/photo-1580301762395-21ce12d4bc4b?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&h=600&fit=crop',
+   262→    categoryId: '', rating: 4.8, reviewCount: 2789, stock: 120, featured: false,
+   263→  },
+   264→  {
+   265→    name: 'Wall Art Canvas Print',
+   266→    slug: 'wall-art-canvas-print',
+   267→    description: 'Set of 3 modern abstract canvas prints on premium gallery-wrap canvas. Ready to hang with included hardware. Each panel measures 16x24 inches.',
+   268→    price: 89.99, compareAtPrice: 129.99,
+   269→    images: 'https://images.unsplash.com/photo-1513519245088-0e12902e35ca?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?w=600&h=600&fit=crop',
+   270→    categoryId: '', rating: 4.4, reviewCount: 1234, stock: 75, featured: false,
+   271→  },
+   272→
+   273→  // ─── Sports & Outdoors (8) ──────────────────────────────────────────────
+   274→  {
+   275→    name: 'Yoga Mat Premium',
+   276→    slug: 'yoga-mat-premium',
+   277→    description: 'Extra thick non-slip yoga mat made from natural rubber with alignment markings. Eco-friendly, sweat-resistant, and comes with carrying strap.',
+   278→    price: 59.99, compareAtPrice: 79.99,
+   279→    images: 'https://images.unsplash.com/photo-1601925260368-ae2f83cf8b7f?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=600&h=600&fit=crop',
+   280→    categoryId: '', rating: 4.7, reviewCount: 4321, stock: 200, featured: false,
+   281→  },
+   282→  {
+   283→    name: 'Insulated Water Bottle',
+   284→    slug: 'insulated-water-bottle',
+   285→    description: 'Double-wall vacuum insulated stainless steel bottle. Keeps drinks cold 24hrs or hot 12hrs. BPA-free with leak-proof lid and powder coat finish.',
+   286→    price: 34.99, compareAtPrice: null,
+   287→    images: 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1523362628745-0c100fc988a8?w=600&h=600&fit=crop',
+   288→    categoryId: '', rating: 4.8, reviewCount: 7654, stock: 350, featured: true,
+   289→  },
+   290→  {
+   291→    name: 'Camping Tent 4-Person',
+   292→    slug: 'camping-tent-4-person',
+   293→    description: 'Lightweight 4-person dome tent with waterproof rating 3000mm, easy setup in 5 minutes, and included footprint. Perfect for family camping trips.',
+   294→    price: 199.99, compareAtPrice: 279.99,
+   295→    images: 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1478131143263-27a1afd38a4f?w=600&h=600&fit=crop',
+   296→    categoryId: '', rating: 4.5, reviewCount: 1234, stock: 40, featured: false,
+   297→  },
+   298→  {
+   299→    name: 'Fitness Tracker Band',
+   300→    slug: 'fitness-tracker-band',
+   301→    description: 'Slim fitness tracker with heart rate monitoring, sleep tracking, SpO2 sensor, and 14-day battery. Water resistant with 20+ exercise modes.',
+   302→    price: 69.99, compareAtPrice: 89.99,
+   303→    images: 'https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1510017803434-a899f8cb4681?w=600&h=600&fit=crop',
+   304→    categoryId: '', rating: 4.4, reviewCount: 5432, stock: 250, featured: false,
+   305→  },
+   306→  {
+   307→    name: 'Mountain Bike Helmet',
+   308→    slug: 'mountain-bike-helmet',
+   309→    description: 'Lightweight MTB helmet with MIPS protection, adjustable visor, and 18 ventilation ports. In-mold polycarbonate shell with comfortable padding system.',
+   310→    price: 119.99, compareAtPrice: 159.99,
+   311→    images: 'https://images.unsplash.com/photo-1557803175-2f6e54b1302b?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1557682250-33bd709cbe85?w=600&h=600&fit=crop',
+   312→    categoryId: '', rating: 4.6, reviewCount: 2345, stock: 85, featured: false,
+   313→  },
+   314→  {
+   315→    name: 'Adjustable Dumbbell Set',
+   316→    slug: 'adjustable-dumbbell-set',
+   317→    description: 'Space-saving adjustable dumbbell set from 5 to 52.5 lbs per hand. Quick-change dial mechanism, durable steel construction with anti-slip grip.',
+   318→    price: 299.99, compareAtPrice: 399.99,
+   319→    images: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=600&h=600&fit=crop',
+   320→    categoryId: '', rating: 4.8, reviewCount: 3456, stock: 35, featured: true,
+   321→  },
+   322→  {
+   323→    name: 'Hiking Backpack 40L',
+   324→    slug: 'hiking-backpack-40l',
+   325→    description: 'Lightweight 40L hiking backpack with ventilated back panel, rain cover, and hydration compatible. Multiple compartments with compression straps and hip belt pockets.',
+   326→    price: 149.99, compareAtPrice: null,
+   327→    images: 'https://images.unsplash.com/photo-1622260614153-03223fb72052?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&h=600&fit=crop',
+   328→    categoryId: '', rating: 4.5, reviewCount: 1678, stock: 65, featured: false,
+   329→  },
+   330→  {
+   331→    name: 'Resistance Band Set',
+   332→    slug: 'resistance-band-set',
+   333→    description: 'Complete set of 5 resistance bands with varying tensions from 5-125 lbs. Includes door anchor, handles, ankle straps, and carrying bag for home workouts.',
+   334→    price: 29.99, compareAtPrice: 44.99,
+   335→    images: 'https://images.unsplash.com/photo-1598289431512-b97b0917affc?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1598632640487-6ea4a4e8b963?w=600&h=600&fit=crop',
+   336→    categoryId: '', rating: 4.5, reviewCount: 6543, stock: 450, featured: false,
+   337→  },
+   338→
+   339→  // ─── Books & Media (7) ──────────────────────────────────────────────────
+   340→  {
+   341→    name: 'E-Reader Paperwhite',
+   342→    slug: 'e-reader-paperwhite',
+   343→    description: '6.8-inch glare-free e-reader with adjustable warm light, 32GB storage, and 10-week battery life. Waterproof with USB-C and Audible support.',
+   344→    price: 139.99, compareAtPrice: 179.99,
+   345→    images: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1512820790803-83ca734da794?w=600&h=600&fit=crop',
+   346→    categoryId: '', rating: 4.8, reviewCount: 8765, stock: 180, featured: true,
+   347→  },
+   348→  {
+   349→    name: 'Wireless Earbuds Pro',
+   350→    slug: 'wireless-earbuds-pro',
+   351→    description: 'True wireless earbuds with active noise cancellation, spatial audio, and 30-hour total battery. IPX4 water resistant with wireless charging case.',
+   352→    price: 199.99, compareAtPrice: 249.99,
+   353→    images: 'https://images.unsplash.com/photo-1590658268037-6bf12f032f55?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1606220588913-b3aacb4d2f46?w=600&h=600&fit=crop',
+   354→    categoryId: '', rating: 4.7, reviewCount: 6543, stock: 160, featured: true,
+   355→  },
+   356→  {
+   357→    name: 'Bluetooth Turntable',
+   358→    slug: 'bluetooth-turntable',
+   359→    description: 'Belt-drive turntable with Bluetooth output, built-in phono preamp, and anti-vibration design. Plays 33-1/3 and 45 RPM vinyl records with audiophile quality.',
+   360→    price: 249.99, compareAtPrice: null,
+   361→    images: 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1571333103957-5fdc0c35c8a8?w=600&h=600&fit=crop',
+   362→    categoryId: '', rating: 4.6, reviewCount: 987, stock: 30, featured: false,
+   363→  },
+   364→  {
+   365→    name: 'Noise-Cancelling Headphones',
+   366→    slug: 'noise-cancelling-headphones',
+   367→    description: 'Over-ear headphones with industry-leading ANC, 30-hour battery, and multipoint connection. Features transparency mode, foldable design, and premium travel case.',
+   368→    price: 349.99, compareAtPrice: 449.99,
+   369→    images: 'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1524678606370-a47ad25cb82a?w=600&h=600&fit=crop',
+   370→    categoryId: '', rating: 4.8, reviewCount: 5432, stock: 70, featured: true,
+   371→  },
+   372→  {
+   373→    name: 'Portable Projector HD',
+   374→    slug: 'portable-projector-hd',
+   375→    description: 'Compact 1080p projector with built-in speakers, WiFi, and Bluetooth. Projects up to 120 inches with keystone correction. Perfect for movie nights and presentations.',
+   376→    price: 279.99, compareAtPrice: 359.99,
+   377→    images: 'https://images.unsplash.com/photo-1478720568477-152d9b164e26?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1598890935858-b7a8a510d0b4?w=600&h=600&fit=crop',
+   378→    categoryId: '', rating: 4.4, reviewCount: 1876, stock: 45, featured: false,
+   379→  },
+   380→  {
+   381→    name: 'Vinyl Record Box Set',
+   382→    slug: 'vinyl-record-box-set',
+   383→    description: 'Deluxe 5-LP vinyl box set featuring iconic greatest hits on 180-gram audiophile vinyl. Includes lyric book, exclusive poster, and digital download code.',
+   384→    price: 89.99, compareAtPrice: null,
+   385→    images: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=600&h=600&fit=crop',
+   386→    categoryId: '', rating: 4.9, reviewCount: 765, stock: 20, featured: false,
+   387→  },
+   388→  {
+   389→    name: 'Drawing Tablet Pro',
+   390→    slug: 'drawing-tablet-pro',
+   391→    description: 'Professional pen display tablet with 13-inch Full HD screen, 8192 pressure levels, and tilt recognition. Includes battery-free stylus and creative software bundle.',
+   392→    price: 449.99, compareAtPrice: 599.99,
+   393→    images: 'https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1586182988905-338932bdc5a0?w=600&h=600&fit=crop',
+   394→    categoryId: '', rating: 4.7, reviewCount: 2134, stock: 50, featured: true,
+   395→  },
+   396→
+   397→  // ─── Beauty & Health (7) ────────────────────────────────────────────────
+   398→  {
+   399→    name: 'Skincare Gift Set',
+   400→    slug: 'skincare-gift-set',
+   401→    description: 'Premium 5-piece skincare set including cleanser, toner, serum, moisturizer, and eye cream. Made with natural ingredients and no parabens.',
+   402→    price: 89.99, compareAtPrice: 129.99,
+   403→    images: 'https://images.unsplash.com/photo-1556228578-0d85b1a4d571?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1570194065650-d99fb4ee7687?w=600&h=600&fit=crop',
+   404→    categoryId: '', rating: 4.7, reviewCount: 3456, stock: 100, featured: false,
+   405→  },
+   406→  {
+   407→    name: 'Electric Toothbrush',
+   408→    slug: 'electric-toothbrush',
+   409→    description: 'Sonic electric toothbrush with 5 brushing modes, 2-minute smart timer, and 30-day battery. Includes 4 brush heads and travel case.',
+   410→    price: 49.99, compareAtPrice: 69.99,
+   411→    images: 'https://images.unsplash.com/photo-1559591937-2c22c3e3fef9?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1609839216965-6a1c5c8e4d44?w=600&h=600&fit=crop',
+   412→    categoryId: '', rating: 4.6, reviewCount: 4321, stock: 220, featured: false,
+   413→  },
+   414→  {
+   415→    name: 'Aromatherapy Diffuser',
+   416→    slug: 'aromatherapy-diffuser',
+   417→    description: 'Ultrasonic essential oil diffuser with 7-color LED mood lighting and auto shut-off. 300ml capacity with whisper-quiet operation for up to 10 hours.',
+   418→    price: 39.99, compareAtPrice: null,
+   419→    images: 'https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1602928321679-560bb453f190?w=600&h=600&fit=crop',
+   420→    categoryId: '', rating: 4.5, reviewCount: 2876, stock: 190, featured: false,
+   421→  },
+   422→  {
+   423→    name: 'Hair Dryer Professional',
+   424→    slug: 'hair-dryer-professional',
+   425→    description: 'Salon-grade hair dryer with ionic technology, 3 heat settings, 2 speed settings, and cool shot button. Lightweight motor with concentrator and diffuser attachments.',
+   426→    price: 149.99, compareAtPrice: 199.99,
+   427→    images: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=600&h=600&fit=crop',
+   428→    categoryId: '', rating: 4.6, reviewCount: 3210, stock: 80, featured: true,
+   429→  },
+   430→  {
+   431→    name: 'Jade Face Roller Set',
+   432→    slug: 'jade-face-roller-set',
+   433→    description: 'Natural jade face roller and gua sha set for facial massage. Helps reduce puffiness, improve circulation, and enhance product absorption. Comes in silk pouch.',
+   434→    price: 24.99, compareAtPrice: 34.99,
+   435→    images: 'https://images.unsplash.com/photo-1590439471364-192aa70c0b53?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=600&h=600&fit=crop',
+   436→    categoryId: '', rating: 4.4, reviewCount: 5678, stock: 250, featured: false,
+   437→  },
+   438→  {
+   439→    name: 'Luxury Bath Bomb Collection',
+   440→    slug: 'luxury-bath-bomb-collection',
+   441→    description: 'Set of 12 handmade bath bombs with natural essential oils, Epsom salts, and dried flowers. Vegan, cruelty-free, and individually wrapped for gifting.',
+   442→    price: 34.99, compareAtPrice: null,
+   443→    images: 'https://images.unsplash.com/photo-1602928321679-560bb453f190?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=600&h=600&fit=crop',
+   444→    categoryId: '', rating: 4.7, reviewCount: 4532, stock: 160, featured: false,
+   445→  },
+   446→  {
+   447→    name: 'Vitamin C Serum',
+   448→    slug: 'vitamin-c-serum',
+   449→    description: 'Professional-grade 20% Vitamin C serum with hyaluronic acid and vitamin E. Brightens skin, reduces dark spots, and boosts collagen. Dermatologist tested.',
+   450→    price: 29.99, compareAtPrice: 44.99,
+   451→    images: 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?w=600&h=600&fit=crop,https://images.unsplash.com/photo-1608248543803-ba4f8c70ae0b?w=600&h=600&fit=crop',
+   452→    categoryId: '', rating: 4.6, reviewCount: 8765, stock: 380, featured: false,
+   453→  },
+   454→];
+   455→
+   456→async function main() {
+   457→  console.log('Seeding database...');
+   458→
+   459→  // Clear existing data
+   460→  await db.orderItem.deleteMany();
+   461→  await db.order.deleteMany();
+   462→  await db.cartItem.deleteMany();
+   463→  await db.cart.deleteMany();
+   464→  await db.product.deleteMany();
+   465→  await db.category.deleteMany();
+   466→  await db.user.deleteMany();
+   467→
+   468→  // Create demo user (password: demo123)
+   469→  const demoUser = await db.user.create({
+   470→    data: {
+   471→      name: 'Demo User',
+   472→      email: 'demo@zshop.com',
+   473→      password: 'demo123',
+   474→    },
+   475→  });
+   476→  console.log(`Created demo user: ${demoUser.email}`);
+   477→
+   478→  // Create categories
+   479→  const categoryRecords = [];
+   480→  for (const cat of categories) {
+   481→    const record = await db.category.create({ data: cat });
+   482→    categoryRecords.push(record);
+   483→    console.log(`Created category: ${cat.name}`);
+   484→  }
+   485→
+   486→  const categoryMap: Record<string, string> = {};
+   487→  categoryRecords.forEach((c) => {
+   488→    categoryMap[c.slug] = c.id;
+   489→  });
+   490→
+   491→  const categorySlugs = [
+   492→    'electronics', 'electronics', 'electronics', 'electronics', 'electronics',
+   493→    'electronics', 'electronics', 'electronics', 'electronics', 'electronics',
+   494→    'fashion', 'fashion', 'fashion', 'fashion', 'fashion',
+   495→    'fashion', 'fashion', 'fashion', 'fashion',
+   496→    'home-living', 'home-living', 'home-living', 'home-living', 'home-living',
+   497→    'home-living', 'home-living', 'home-living', 'home-living',
+   498→    'sports-outdoors', 'sports-outdoors', 'sports-outdoors', 'sports-outdoors',
+   499→    'sports-outdoors', 'sports-outdoors', 'sports-outdoors', 'sports-outdoors',
+   500→    'books-media', 'books-media', 'books-media', 'books-media',
+   501→    'books-media', 'books-media', 'books-media',
+   502→    'beauty-health', 'beauty-health', 'beauty-health', 'beauty-health',
+   503→    'beauty-health', 'beauty-health', 'beauty-health',
+   504→  ];
+   505→
+   506→  for (let i = 0; i < products.length; i++) {
+   507→    const product = { ...products[i], categoryId: categoryMap[categorySlugs[i]] };
+   508→    await db.product.create({ data: product });
+   509→    console.log(`Created product: ${product.name}`);
+   510→  }
+   511→
+   512→  console.log('\nSeeding complete!');
+   513→  console.log(`Created 1 demo user (demo@zshop.com / demo123)`);
+   514→  console.log(`Created ${categoryRecords.length} categories`);
+   515→  console.log(`Created ${products.length} products`);
+   516→}
+   517→
+   518→main()
+   519→  .catch((e) => {
+   520→    console.error(e);
+   521→    process.exit(1);
+   522→  })
+   523→  .finally(async () => {
+   524→    await db.$disconnect();
+   525→  });
+   526→

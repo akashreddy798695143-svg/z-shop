@@ -12,6 +12,7 @@ import { CheckoutForm } from '@/components/shop/checkout-form';
 import { CheckoutSuccess } from '@/components/shop/checkout-success';
 import { OrderHistory } from '@/components/shop/order-history';
 import { OrderDetail } from '@/components/shop/order-detail';
+import { AuthModal } from '@/components/shop/auth-modal';
 
 function ViewRenderer({ view }: { view: string }) {
   switch (view) {
@@ -56,6 +57,7 @@ export default function Home() {
         </AnimatePresence>
       </main>
       <Footer />
+      <AuthModal />
     </div>
   );
 }

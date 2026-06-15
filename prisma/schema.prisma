@@ -7,6 +7,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  orders    Order[]
+}
+
 model Category {
   id          String    @id @default(cuid())
   name        String
@@ -61,7 +72,8 @@ model CartItem {
 
 model Order {
   id           String      @id @default(cuid())
-  sessionId    String
+  userId       String
+  user         User        @relation(fields: [userId], references: [id])
   email        String
   firstName    String
   lastName     String

@@ -46,3 +46,38 @@ Stage Summary:
 - All new products have high-quality Unsplash images with multiple views
 - Category distribution is balanced across all 6 categories
 - Verified in browser: shop page shows all 50 products, category filters work, product detail images display correctly
+
+---
+Task ID: 3
+Agent: Main Agent
+Task: Add Sign In/Sign Up authentication like Flipkart, enhance UI attractiveness, fix missing images
+
+Work Log:
+- Added User model to Prisma schema (id, name, email, password, avatar, createdAt, updatedAt)
+- Updated Order model to reference userId instead of sessionId
+- Created auth API routes: /api/auth/login, /api/auth/register, /api/auth/me
+- Updated Zustand store with auth state: user, isAuthModalOpen, authModalTab, setUser, openAuthModal, closeAuthModal, logout
+- Built Flipkart-style AuthModal component with split layout (gradient branding + form)
+- Login and Sign Up forms with validation, password visibility toggle, loading states
+- Demo account hint: demo@zshop.com / demo123
+- Updated Header with Login/Sign Up buttons (unauthenticated) and User dropdown (authenticated)
+- Added auth guards: Add to Cart requires login, Cart page shows login banner, Checkout requires login
+- Updated ProductCard: auth gate on add-to-cart, always-visible quick-add on mobile
+- Updated ProductDetail: auth gate on add-to-cart, gradient button
+- Updated CartPage: login banner when not authenticated
+- Updated CheckoutForm: auto-fills from user data, includes userId in API call
+- Updated OrderHistory: login prompt when not authenticated
+- Enhanced HeroSection: floating animated icons, dot pattern, multi-stop gradient, scale animations, 6 trust badges
+- Enhanced HomePage: Deal of the Day countdown section, New Arrivals horizontal scroll, promo banner with pattern overlay
+- Fixed all product images to use working Unsplash URLs (every product now has 2 images)
+- Re-seeded database with demo user and 50 products
+- All API endpoints verified working: login, register, cart, checkout, products, categories, orders
+- Lint passes with zero errors
+
+Stage Summary:
+- Complete authentication system like Flipkart with Login/Sign Up modal
+- Users MUST login before adding to cart or making purchases
+- UI significantly enhanced with Deal of the Day, New Arrivals, trust badges, better gradients
+- All 50 products have working images (2 per product)
+- Demo account: demo@zshop.com / demo123
+- All API routes verified working via curl integration tests

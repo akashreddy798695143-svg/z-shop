@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, CreditCard, Loader2 } from 'lucide-react';
 import { useShopStore, type CartItem } from '@/store/use-shop-store';
@@ -23,6 +23,8 @@ export function CheckoutForm() {
     clearCart,
     setLastOrderId,
     navigate,
+    user,
+    openAuthModal,
   } = useShopStore();
 
   const [loading, setLoading] = useState(false);
@@ -40,6 +42,31 @@ export function CheckoutForm() {
     country: 'US',
     phone: '',
   });
+
+  // Auto-fill from logged-in user data
+  useEffect(() => {
+    if (user) {
+      setForm((prev) => ({
+        ...prev,
+        email: user.email,
+        firstName: user.name.split(' ')[0] || prev.firstName,
+        lastName: user.name.split(' ').slice(1).join(' ') || prev.lastName,
+      }));
+    }
+  }, [user]);
+
+  // Redirect if not logged in
+  useEffect(() => {
+    if (!user && cartItems.length > 0) {
+      openAuthModal('login');
+      toast({
+        title: 'Please login',
+        description: 'You need to login to checkout.',
+        variant: 'destructive',
+      });
+      navigate('cart');
+    }
+  }, [user, cartItems.length, openAuthModal, navigate]);
 
   const subtotal = cartTotal;
   const tax = Math.round(subtotal * 0.08 * 100) / 100;
@@ -78,6 +105,16 @@ export function CheckoutForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    if (!user) {
+      openAuthModal('login');
+      toast({
+        title: 'Please login',
+        description: 'You need to login to place an order.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     if (!validate()) {
       toast({
         title: 'Missing information',
@@ -104,6 +141,7 @@ export function CheckoutForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           sessionId,
+          userId: user.id,
           email: form.email,
           firstName: form.firstName,
           lastName: form.lastName,

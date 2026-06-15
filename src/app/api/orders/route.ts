@@ -5,16 +5,23 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const sessionId = searchParams.get("sessionId");
+    const userId = searchParams.get("userId");
 
-    if (!sessionId) {
+    if (!userId && !sessionId) {
       return NextResponse.json(
-        { error: "sessionId is required" },
+        { error: "userId or sessionId is required" },
         { status: 400 }
       );
     }
 
+    // Order model uses userId; find orders by userId if provided
+    // sessionId is accepted for API compatibility but Order model is keyed by userId
+    if (!userId) {
+      return NextResponse.json([]);
+    }
+
     const orders = await db.order.findMany({
-      where: { sessionId },
+      where: { userId },
       include: {
         items: true,
       },

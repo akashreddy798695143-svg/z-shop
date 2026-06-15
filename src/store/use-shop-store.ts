@@ -23,6 +23,12 @@ export interface CartItem {
   quantity: number;
 }
 
+export interface UserInfo {
+  id: string;
+  name: string;
+  email: string;
+}
+
 interface ShopState {
   // Navigation
   view: View;
@@ -51,6 +57,15 @@ interface ShopState {
   // Checkout
   lastOrderId: string | null;
   setLastOrderId: (id: string | null) => void;
+
+  // Auth
+  user: UserInfo | null;
+  isAuthModalOpen: boolean;
+  authModalTab: 'login' | 'signup';
+  setUser: (user: UserInfo | null) => void;
+  openAuthModal: (tab?: 'login' | 'signup') => void;
+  closeAuthModal: () => void;
+  logout: () => void;
 }
 
 interface ShopGetters {
@@ -218,12 +233,31 @@ export const useShopStore = create<ShopState & ShopGetters>()(
       lastOrderId: null,
 
       setLastOrderId: (id: string | null) => set({ lastOrderId: id }),
+
+      // ── Auth ───────────────────────────────────────────────────────
+      user: null,
+      isAuthModalOpen: false,
+      authModalTab: 'login',
+
+      setUser: (user: UserInfo | null) => set({ user }),
+      openAuthModal: (tab?: 'login' | 'signup') => set({
+        isAuthModalOpen: true,
+        authModalTab: tab || 'login',
+      }),
+      closeAuthModal: () => set({ isAuthModalOpen: false }),
+      logout: () => set({
+        user: null,
+        cartItems: [],
+        cartCount: 0,
+        cartTotal: 0,
+      }),
     }),
     {
       name: 'z-shop-storage',
       partialize: (state) => ({
         cartItems: state.cartItems,
         sessionId: state.sessionId,
+        user: state.user,
       }),
       // Re-derive computed values after rehydration
       onRehydrateStorage: () => (state) => {

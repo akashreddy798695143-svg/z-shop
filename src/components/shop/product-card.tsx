@@ -1,6 +1,6 @@
 'use client';
 
-import { ShoppingCart, Heart } from 'lucide-react';
+import { ShoppingCart } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -27,7 +27,7 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const { navigate, addToCart, sessionId } = useShopStore();
+  const { navigate, addToCart, sessionId, user, openAuthModal } = useShopStore();
   const image = product.images[0] || '';
   const hasDiscount = product.compareAtPrice && product.compareAtPrice > product.price;
   const discountPercent = hasDiscount
@@ -40,6 +40,17 @@ export function ProductCard({ product }: ProductCardProps) {
 
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.stopPropagation();
+
+    if (!user) {
+      openAuthModal('login');
+      toast({
+        title: 'Please login',
+        description: 'Please login to add items to cart.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     addToCart({
       productId: product.id,
       name: product.name,
@@ -70,9 +81,14 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <Card
-      className="group cursor-pointer overflow-hidden py-0 gap-0 transition-all duration-300 hover:shadow-lg border border-gray-200"
+      className="group cursor-pointer overflow-hidden py-0 gap-0 transition-all duration-300 hover:shadow-lg border border-gray-200 relative"
       onClick={handleCardClick}
     >
+      {/* Shimmer overlay on hover */}
+      <div className="absolute inset-0 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
+      </div>
+
       {/* Image */}
       <div className="relative aspect-square overflow-hidden bg-gray-100">
         {image ? (
@@ -102,8 +118,8 @@ export function ProductCard({ product }: ProductCardProps) {
           </Badge>
         )}
 
-        {/* Quick Add Button */}
-        <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        {/* Quick Add Button - always visible on mobile, hover on sm+ */}
+        <div className="absolute bottom-2 right-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200">
           <Button
             size="icon"
             className="h-9 w-9 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white shadow-lg"

@@ -32,7 +32,7 @@ export function ProductDetail() {
   const [selectedImage, setSelectedImage] = useState(0);
   const [addedToCart, setAddedToCart] = useState(false);
 
-  const { selectedProductId, navigate, addToCart, sessionId } = useShopStore();
+  const { selectedProductId, navigate, addToCart, sessionId, user, openAuthModal } = useShopStore();
 
   useEffect(() => {
     if (!selectedProductId) return;
@@ -53,6 +53,16 @@ export function ProductDetail() {
 
   const handleAddToCart = async () => {
     if (!product) return;
+
+    if (!user) {
+      openAuthModal('login');
+      toast({
+        title: 'Please login',
+        description: 'Please login to add items to cart.',
+        variant: 'destructive',
+      });
+      return;
+    }
 
     for (let i = 0; i < quantity; i++) {
       addToCart({
@@ -253,7 +263,7 @@ export function ProductDetail() {
 
             <Button
               size="lg"
-              className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white h-12"
+              className="flex-1 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-700 hover:to-emerald-600 text-white h-12 shadow-lg shadow-emerald-200 transition-all duration-200 hover:scale-[1.02]"
               onClick={handleAddToCart}
               disabled={product.stock === 0 || addedToCart}
             >

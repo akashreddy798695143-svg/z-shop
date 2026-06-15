@@ -18,26 +18,33 @@ async function getCartWithItems(sessionId: string) {
   });
 }
 
-// GET /api/cart - Get cart by sessionId
+// GET /api/cart - Get cart by sessionId or userId
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const sessionId = searchParams.get("sessionId");
+    const userId = searchParams.get("userId");
 
-    if (!sessionId) {
+    if (!sessionId && !userId) {
       return NextResponse.json(
-        { error: "sessionId is required" },
+        { error: "sessionId or userId is required" },
         { status: 400 }
       );
     }
 
-    const cart = await getCartWithItems(sessionId);
-
-    if (!cart) {
-      return NextResponse.json({ items: [] });
+    // Use sessionId for cart lookup if available
+    // userId is accepted for API compatibility but cart is keyed by sessionId
+    if (sessionId) {
+      const cart = await getCartWithItems(sessionId);
+      if (!cart) {
+        return NextResponse.json({ items: [] });
+      }
+      return NextResponse.json(cart);
     }
 
-    return NextResponse.json(cart);
+    // If only userId is provided, return empty cart
+    // (Cart model uses sessionId, not userId)
+    return NextResponse.json({ items: [] });
   } catch (error) {
     console.error("Error fetching cart:", error);
     return NextResponse.json(

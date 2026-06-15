@@ -1,12 +1,20 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, ShoppingCart, Menu, X, Store } from 'lucide-react';
+import { Search, ShoppingCart, Menu, Store, User, LogOut, Package } from 'lucide-react';
 import { useShopStore } from '@/store/use-shop-store';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from '@/components/ui/sheet';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 
 export function Header() {
   const [localSearch, setLocalSearch] = useState('');
@@ -17,6 +25,9 @@ export function Header() {
     setSearchQuery,
     setSelectedCategory,
     cartCount,
+    user,
+    openAuthModal,
+    logout,
   } = useShopStore();
 
   const handleSearch = (e: React.FormEvent) => {
@@ -47,8 +58,8 @@ export function Header() {
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
-      <div className="container mx-auto flex h-16 items-center gap-4 px-4">
+    <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80 shadow-sm">
+      <div className="container mx-auto flex h-16 items-center gap-3 px-4">
         {/* Logo */}
         <button
           onClick={() => { goHome(); setLocalSearch(''); }}
@@ -88,6 +99,64 @@ export function Header() {
             />
           </div>
         </form>
+
+        {/* Auth Section - Desktop */}
+        <div className="hidden md:flex items-center gap-2">
+          {user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="flex items-center gap-2 h-9 px-3 hover:bg-emerald-50">
+                  <Avatar className="h-7 w-7">
+                    <AvatarFallback className="bg-emerald-100 text-emerald-700 text-xs font-bold">
+                      {user.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="text-sm font-medium text-gray-700 max-w-[100px] truncate">{user.name}</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <div className="px-2 py-1.5">
+                  <p className="text-sm font-medium">{user.name}</p>
+                  <p className="text-xs text-muted-foreground">{user.email}</p>
+                </div>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => navigate('orders')}
+                  className="cursor-pointer"
+                >
+                  <Package className="mr-2 h-4 w-4" />
+                  My Orders
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => logout()}
+                  className="cursor-pointer text-red-600 focus:text-red-600"
+                >
+                  <LogOut className="mr-2 h-4 w-4" />
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => openAuthModal('login')}
+                className="text-sm font-medium text-gray-700 hover:text-emerald-600 hover:bg-emerald-50"
+              >
+                Login
+              </Button>
+              <Button
+                size="sm"
+                onClick={() => openAuthModal('signup')}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold h-8 px-4"
+              >
+                Sign Up
+              </Button>
+            </>
+          )}
+        </div>
 
         {/* Cart Button */}
         <button
@@ -146,6 +215,58 @@ export function Header() {
                 </Button>
               ))}
             </nav>
+
+            {/* Mobile Auth Section */}
+            <div className="mt-4 pt-4 border-t">
+              {user ? (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3 px-3 py-2">
+                    <Avatar className="h-9 w-9">
+                      <AvatarFallback className="bg-emerald-100 text-emerald-700 text-sm font-bold">
+                        {user.name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium truncate">{user.name}</p>
+                      <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+                    </div>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    onClick={() => { handleNavClick('orders'); }}
+                    className="w-full justify-start text-base font-medium"
+                  >
+                    <Package className="mr-2 h-4 w-4" />
+                    My Orders
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    onClick={() => { logout(); setMobileMenuOpen(false); }}
+                    className="w-full justify-start text-base font-medium text-red-600 hover:text-red-700 hover:bg-red-50"
+                  >
+                    <LogOut className="mr-2 h-4 w-4" />
+                    Logout
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <Button
+                    className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
+                    onClick={() => { openAuthModal('login'); setMobileMenuOpen(false); }}
+                  >
+                    <User className="mr-2 h-4 w-4" />
+                    Login
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="w-full border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+                    onClick={() => { openAuthModal('signup'); setMobileMenuOpen(false); }}
+                  >
+                    Sign Up
+                  </Button>
+                </div>
+              )}
+            </div>
           </SheetContent>
         </Sheet>
       </div>
