@@ -12,6 +12,9 @@ export async function GET(
       where: { id },
       include: {
         items: true,
+        tracking: {
+          orderBy: { timestamp: "asc" },
+        },
       },
     });
 

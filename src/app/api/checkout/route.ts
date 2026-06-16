@@ -102,9 +102,26 @@ export async function POST(request: NextRequest) {
             quantity: item.quantity,
           })),
         },
+        tracking: {
+          create: [
+            {
+              status: "pending",
+              description: "Your order has been placed successfully",
+              location: "Online",
+              timestamp: new Date(),
+            },
+            {
+              status: "confirmed",
+              description: "Order confirmed by seller. Preparing your package.",
+              location: "Z Shop Warehouse",
+              timestamp: new Date(Date.now() + 2 * 60 * 60 * 1000), // +2 hours
+            },
+          ],
+        },
       },
       include: {
         items: true,
+        tracking: true,
       },
     });
 

@@ -1,14 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
-import { ArrowLeft, MapPin, Package, Phone, Mail } from 'lucide-react';
+import { ArrowLeft, MapPin, Package, Phone, Mail, FileText, Download, Truck } from 'lucide-react';
 import { useShopStore } from '@/store/use-shop-store';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { format } from 'date-fns';
+import { OrderTrackingTimeline } from './order-tracking-timeline';
 
 interface OrderItem {
   id: string;
@@ -16,6 +16,14 @@ interface OrderItem {
   productImage: string;
   price: number;
   quantity: number;
+}
+
+interface TrackingStep {
+  id: string;
+  status: string;
+  description: string;
+  location: string | null;
+  timestamp: string;
 }
 
 interface Order {
@@ -36,20 +44,25 @@ interface Order {
   status: string;
   paymentMethod: string;
   items: OrderItem[];
+  tracking: TrackingStep[];
   createdAt: string;
 }
 
 const statusColors: Record<string, string> = {
   pending: 'bg-amber-100 text-amber-700',
-  processing: 'bg-blue-100 text-blue-700',
+  confirmed: 'bg-blue-100 text-blue-700',
+  processing: 'bg-indigo-100 text-indigo-700',
   shipped: 'bg-purple-100 text-purple-700',
+  'out-for-delivery': 'bg-orange-100 text-orange-700',
   delivered: 'bg-emerald-100 text-emerald-700',
   cancelled: 'bg-red-100 text-red-700',
 };
 
 export function OrderDetail() {
   const [order, setOrder] = useState<Order | null>(null);
-  const { selectedOrderId, navigate } = useShopStore();
+  const [downloadingInvoice, setDownloadingInvoice] = useState(false);
+  const selectedOrderId = useShopStore((s) => s.selectedOrderId);
+  const navigate = useShopStore((s) => s.navigate);
 
   useEffect(() => {
     if (!selectedOrderId) return;
@@ -65,8 +78,34 @@ export function OrderDetail() {
     return () => { cancelled = true; };
   }, [selectedOrderId]);
 
-  // Derive loading state from whether order data matches current selection
   const loading = !order || order.id !== selectedOrderId;
+
+  const handleDownloadInvoice = async () => {
+    if (!order) return;
+    setDownloadingInvoice(true);
+    try {
+      const res = await fetch(`/api/invoice/${order.id}`);
+      const html = await res.text();
+      const blob = new Blob([html], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `invoice-${order.id.slice(-8).toUpperCase()}.html`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch {
+      // Silent fail
+    } finally {
+      setDownloadingInvoice(false);
+    }
+  };
+
+  const handleViewInvoice = () => {
+    if (!order) return;
+    window.open(`/api/invoice/${order.id}`, '_blank');
+  };
 
   if (loading) {
     return (
@@ -90,12 +129,7 @@ export function OrderDetail() {
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
-      className="container mx-auto px-4 py-8"
-    >
+    <div className="container mx-auto px-4 py-8">
       <Button
         variant="ghost"
         onClick={() => navigate('orders')}
@@ -113,18 +147,44 @@ export function OrderDetail() {
             Placed on {format(new Date(order.createdAt), 'MMMM d, yyyy \'at\' h:mm a')}
           </p>
         </div>
-        <Badge className={`${statusColors[order.status] || 'bg-gray-100 text-gray-700'} border-0 text-sm px-3 py-1 w-fit`}>
-          {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-        </Badge>
+        <div className="flex items-center gap-3">
+          <Badge className={`${statusColors[order.status] || 'bg-gray-100 text-gray-700'} border-0 text-sm px-3 py-1`}>
+            {order.status.charAt(0).toUpperCase() + order.status.slice(1).replace(/-/g, ' ')}
+          </Badge>
+          <Button
+            variant="outline"
+            size="sm"
+            className="gap-2 text-emerald-700 border-emerald-200 hover:bg-emerald-50"
+            onClick={handleViewInvoice}
+          >
+            <FileText className="h-4 w-4" />
+            View Invoice
+          </Button>
+          <Button
+            size="sm"
+            className="gap-2 bg-emerald-600 hover:bg-emerald-700 text-white"
+            onClick={handleDownloadInvoice}
+            disabled={downloadingInvoice}
+          >
+            <Download className="h-4 w-4" />
+            {downloadingInvoice ? 'Downloading...' : 'Download Invoice'}
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Order Items */}
         <div className="lg:col-span-2 space-y-6">
+          {/* Order Tracking Timeline (Flipkart-style) */}
+          <OrderTrackingTimeline
+            trackingSteps={order.tracking || []}
+            currentStatus={order.status}
+          />
+
+          {/* Order Items */}
           <div className="bg-white rounded-xl border shadow-sm p-6">
             <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
               <Package className="h-5 w-5 text-emerald-600" />
-              Order Items
+              Order Items ({order.items.length})
             </h2>
             <div className="space-y-4">
               {order.items.map((item) => (
@@ -140,13 +200,10 @@ export function OrderDetail() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="font-medium text-sm truncate">{item.productName}</h4>
-                    <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
+                    <p className="text-sm text-muted-foreground">Qty: {item.quantity} × ${item.price.toFixed(2)}</p>
                   </div>
                   <div className="text-right shrink-0">
-                    <p className="font-semibold">${item.price.toFixed(2)}</p>
-                    {item.quantity > 1 && (
-                      <p className="text-xs text-muted-foreground">${(item.price * item.quantity).toFixed(2)} total</p>
-                    )}
+                    <p className="font-semibold">${(item.price * item.quantity).toFixed(2)}</p>
                   </div>
                 </div>
               ))}
@@ -206,8 +263,40 @@ export function OrderDetail() {
               </div>
             </div>
           </div>
+
+          {/* Quick Actions */}
+          <div className="bg-white rounded-xl border shadow-sm p-6">
+            <h2 className="text-lg font-semibold mb-3">Quick Actions</h2>
+            <div className="space-y-2">
+              <Button
+                variant="outline"
+                className="w-full justify-start gap-2"
+                onClick={() => navigate('orders')}
+              >
+                <Package className="h-4 w-4" />
+                View All Orders
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full justify-start gap-2 text-emerald-700 border-emerald-200 hover:bg-emerald-50"
+                onClick={handleViewInvoice}
+              >
+                <FileText className="h-4 w-4" />
+                View Invoice
+              </Button>
+              <Button
+                variant="outline"
+                className="w-full justify-start gap-2 text-emerald-700 border-emerald-200 hover:bg-emerald-50"
+                onClick={handleDownloadInvoice}
+                disabled={downloadingInvoice}
+              >
+                <Download className="h-4 w-4" />
+                Download Invoice
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
