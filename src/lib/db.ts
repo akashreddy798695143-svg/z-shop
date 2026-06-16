@@ -7,5 +7,6 @@ export const prisma =
   new PrismaClient({
     log: ['query'],
   })
+export const prisma = db
 
-if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = db
