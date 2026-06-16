@@ -19,16 +19,15 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 export function Header() {
   const [localSearch, setLocalSearch] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const {
-    navigate,
-    goHome,
-    setSearchQuery,
-    setSelectedCategory,
-    cartCount,
-    user,
-    openAuthModal,
-    logout,
-  } = useShopStore();
+  // Use individual selectors to prevent unnecessary re-renders
+  const navigate = useShopStore((s) => s.navigate);
+  const goHome = useShopStore((s) => s.goHome);
+  const setSearchQuery = useShopStore((s) => s.setSearchQuery);
+  const setSelectedCategory = useShopStore((s) => s.setSelectedCategory);
+  const cartCount = useShopStore((s) => s.cartCount);
+  const user = useShopStore((s) => s.user);
+  const openAuthModal = useShopStore((s) => s.openAuthModal);
+  const logout = useShopStore((s) => s.logout);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();

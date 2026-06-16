@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Sparkles, Truck, RotateCcw, Shield, Headphones, Award, CreditCard, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -46,6 +46,7 @@ export function HeroSection() {
   const navigate = useShopStore((s) => s.navigate);
   const [current, setCurrent] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const autoPlayTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Auto-advance slides
   useEffect(() => {
@@ -56,11 +57,24 @@ export function HeroSection() {
     return () => clearInterval(timer);
   }, [isAutoPlaying]);
 
-  const goTo = (index: number) => {
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (autoPlayTimeoutRef.current) {
+        clearTimeout(autoPlayTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const goTo = useCallback((index: number) => {
     setCurrent(index);
     setIsAutoPlaying(false);
-    setTimeout(() => setIsAutoPlaying(true), 10000);
-  };
+    // Clear any existing timeout
+    if (autoPlayTimeoutRef.current) {
+      clearTimeout(autoPlayTimeoutRef.current);
+    }
+    autoPlayTimeoutRef.current = setTimeout(() => setIsAutoPlaying(true), 10000);
+  }, []);
 
   const goNext = () => goTo((current + 1) % heroSlides.length);
   const goPrev = () => goTo((current - 1 + heroSlides.length) % heroSlides.length);

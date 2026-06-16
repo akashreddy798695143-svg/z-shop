@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import { SlidersHorizontal, Search, X } from 'lucide-react';
 import { useShopStore, type SortOption } from '@/store/use-shop-store';
 import { ProductCard } from './product-card';
@@ -47,6 +47,67 @@ const sortOptions: { value: SortOption; label: string }[] = [
   { value: 'newest', label: 'Newest' },
 ];
 
+// Extracted FilterContent as a separate named component to prevent re-creation on every render
+interface FilterContentProps {
+  categories: Category[];
+  selectedCategory: string | null;
+  sortBy: SortOption;
+  onCategorySelect: (slug: string | null) => void;
+  onSortChange: (sort: SortOption) => void;
+}
+
+function FilterContent({ categories, selectedCategory, sortBy, onCategorySelect, onSortChange }: FilterContentProps) {
+  return (
+    <div className="space-y-6">
+      <div>
+        <h3 className="font-semibold mb-3 text-sm uppercase tracking-wide text-muted-foreground">Categories</h3>
+        <div className="space-y-1">
+          <button
+            onClick={() => onCategorySelect(null)}
+            className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${
+              !selectedCategory
+                ? 'bg-emerald-50 text-emerald-700 font-medium'
+                : 'hover:bg-gray-50 text-gray-700'
+            }`}
+          >
+            All Categories
+          </button>
+          {categories.map((cat) => (
+            <button
+              key={cat.id}
+              onClick={() => onCategorySelect(cat.slug)}
+              className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors flex items-center justify-between ${
+                selectedCategory === cat.slug
+                  ? 'bg-emerald-50 text-emerald-700 font-medium'
+                  : 'hover:bg-gray-50 text-gray-700'
+              }`}
+            >
+              <span>{cat.name}</span>
+              <span className="text-xs text-muted-foreground">{cat._count.products}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <h3 className="font-semibold mb-3 text-sm uppercase tracking-wide text-muted-foreground">Sort By</h3>
+        <Select value={sortBy} onValueChange={(v) => onSortChange(v as SortOption)}>
+          <SelectTrigger className="w-full">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {sortOptions.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+    </div>
+  );
+}
+
 export function ProductGrid() {
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -54,14 +115,13 @@ export function ProductGrid() {
   const [localSearch, setLocalSearch] = useState('');
   const [filterOpen, setFilterOpen] = useState(false);
 
-  const {
-    searchQuery,
-    selectedCategory,
-    sortBy,
-    setSearchQuery,
-    setSelectedCategory,
-    setSortBy,
-  } = useShopStore();
+  // Use individual selectors to prevent unnecessary re-renders
+  const searchQuery = useShopStore((s) => s.searchQuery);
+  const selectedCategory = useShopStore((s) => s.selectedCategory);
+  const sortBy = useShopStore((s) => s.sortBy);
+  const setSearchQuery = useShopStore((s) => s.setSearchQuery);
+  const setSelectedCategory = useShopStore((s) => s.setSelectedCategory);
+  const setSortBy = useShopStore((s) => s.setSortBy);
 
   // Fetch categories
   useEffect(() => {
@@ -109,63 +169,16 @@ export function ProductGrid() {
     setSearchQuery('');
   };
 
-  const handleCategorySelect = (slug: string | null) => {
+  const handleCategorySelect = useCallback((slug: string | null) => {
     setSelectedCategory(slug);
     setFilterOpen(false);
-  };
+  }, [setSelectedCategory]);
+
+  const handleSortChange = useCallback((sort: SortOption) => {
+    setSortBy(sort);
+  }, [setSortBy]);
 
   const activeCategory = categories.find((c) => c.slug === selectedCategory);
-
-  // Filter sidebar content
-  const FilterContent = () => (
-    <div className="space-y-6">
-      <div>
-        <h3 className="font-semibold mb-3 text-sm uppercase tracking-wide text-muted-foreground">Categories</h3>
-        <div className="space-y-1">
-          <button
-            onClick={() => handleCategorySelect(null)}
-            className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors ${
-              !selectedCategory
-                ? 'bg-emerald-50 text-emerald-700 font-medium'
-                : 'hover:bg-gray-50 text-gray-700'
-            }`}
-          >
-            All Categories
-          </button>
-          {categories.map((cat) => (
-            <button
-              key={cat.id}
-              onClick={() => handleCategorySelect(cat.slug)}
-              className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors flex items-center justify-between ${
-                selectedCategory === cat.slug
-                  ? 'bg-emerald-50 text-emerald-700 font-medium'
-                  : 'hover:bg-gray-50 text-gray-700'
-              }`}
-            >
-              <span>{cat.name}</span>
-              <span className="text-xs text-muted-foreground">{cat._count.products}</span>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <div>
-        <h3 className="font-semibold mb-3 text-sm uppercase tracking-wide text-muted-foreground">Sort By</h3>
-        <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>
-          <SelectTrigger className="w-full">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            {sortOptions.map((option) => (
-              <SelectItem key={option.value} value={option.value}>
-                {option.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-    </div>
-  );
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -228,7 +241,13 @@ export function ProductGrid() {
           </SheetTrigger>
           <SheetContent side="left" className="w-72">
             <SheetTitle className="mb-4">Filters</SheetTitle>
-            <FilterContent />
+            <FilterContent
+              categories={categories}
+              selectedCategory={selectedCategory}
+              sortBy={sortBy}
+              onCategorySelect={handleCategorySelect}
+              onSortChange={handleSortChange}
+            />
           </SheetContent>
         </Sheet>
       </div>
@@ -263,7 +282,13 @@ export function ProductGrid() {
       <div className="flex gap-8">
         {/* Desktop Sidebar */}
         <aside className="hidden lg:block w-56 shrink-0">
-          <FilterContent />
+          <FilterContent
+            categories={categories}
+            selectedCategory={selectedCategory}
+            sortBy={sortBy}
+            onCategorySelect={handleCategorySelect}
+            onSortChange={handleSortChange}
+          />
         </aside>
 
         {/* Product Grid */}

@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
 import { useShopStore } from '@/store/use-shop-store';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -15,23 +14,11 @@ interface Category {
   _count: { products: number };
 }
 
-const container = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: { staggerChildren: 0.1 },
-  },
-};
-
-const item = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0 },
-};
-
 export function CategoryGrid() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
-  const { navigate, setSelectedCategory } = useShopStore();
+  const navigate = useShopStore((s) => s.navigate);
+  const setSelectedCategory = useShopStore((s) => s.setSelectedCategory);
 
   useEffect(() => {
     fetch('/api/categories')
@@ -67,14 +54,11 @@ export function CategoryGrid() {
   return (
     <section className="container mx-auto px-4 py-12">
       <h2 className="text-2xl font-bold mb-6">Shop by Category</h2>
-      <motion.div
-        variants={container}
-        initial="hidden"
-        animate="show"
+      <div
         className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4"
       >
         {categories.map((category) => (
-          <motion.div key={category.id} variants={item}>
+          <div key={category.id}>
             <Card
               className="group cursor-pointer overflow-hidden border-0 shadow-sm hover:shadow-md transition-all duration-300 py-0 gap-0"
               onClick={() => handleCategoryClick(category.slug)}
@@ -102,9 +86,9 @@ export function CategoryGrid() {
                 </p>
               </CardContent>
             </Card>
-          </motion.div>
+          </div>
         ))}
-      </motion.div>
+      </div>
     </section>
   );
 }

@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
 import { ArrowRight, Clock, Flame, Sparkles, Zap } from 'lucide-react';
 import { useShopStore } from '@/store/use-shop-store';
 import { HeroSection } from './hero-section';
@@ -127,10 +126,7 @@ export function HomePage() {
             </div>
           </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4 }}
+          <div
             className="relative rounded-2xl overflow-hidden border shadow-lg bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900"
           >
             <div className="absolute inset-0 opacity-5" style={{
@@ -194,7 +190,7 @@ export function HomePage() {
                 </Button>
               </div>
             </div>
-          </motion.div>
+          </div>
         </section>
       )}
 
@@ -228,15 +224,8 @@ export function HomePage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {featuredProducts.map((product, index) => (
-              <motion.div
-                key={product.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-              >
-                <ProductCard product={product} />
-              </motion.div>
+            {featuredProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
             ))}
           </div>
         )}
@@ -277,16 +266,13 @@ export function HomePage() {
           </div>
 
           <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-thin">
-            {newArrivals.map((product, index) => (
-              <motion.div
+            {newArrivals.map((product) => (
+              <div
                 key={product.id}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.05 }}
                 className="shrink-0 w-[260px] snap-start"
               >
                 <ProductCard product={product} />
-              </motion.div>
+              </div>
             ))}
           </div>
         </section>
@@ -304,12 +290,7 @@ export function HomePage() {
 
         <div className="container relative mx-auto px-4 py-12 sm:py-16">
           <div className="max-w-2xl mx-auto text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5 }}
-            >
+            <div>
               <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 mb-4">
                 <Zap className="h-3 w-3 mr-1" />
                 Limited Time Offer
@@ -328,7 +309,7 @@ export function HomePage() {
                 Shop Now
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>

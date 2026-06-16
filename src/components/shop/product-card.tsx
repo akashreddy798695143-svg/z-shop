@@ -1,5 +1,6 @@
 'use client';
 
+import { useCallback } from 'react';
 import { ShoppingCart } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -27,7 +28,12 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
-  const { navigate, addToCart, sessionId, user, openAuthModal } = useShopStore();
+  // Use individual selectors to prevent unnecessary re-renders
+  const navigate = useShopStore((s) => s.navigate);
+  const addToCart = useShopStore((s) => s.addToCart);
+  const sessionId = useShopStore((s) => s.sessionId);
+  const user = useShopStore((s) => s.user);
+  const openAuthModal = useShopStore((s) => s.openAuthModal);
   const image = product.images[0] || '';
   const hasDiscount = product.compareAtPrice && product.compareAtPrice > product.price;
   const discountPercent = hasDiscount

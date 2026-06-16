@@ -9,18 +9,17 @@ import { Separator } from '@/components/ui/separator';
 import { toast } from '@/hooks/use-toast';
 
 export function CartPage() {
-  const {
-    cartItems,
-    cartTotal,
-    cartCount,
-    sessionId,
-    updateQuantity,
-    removeFromCart,
-    setCartFromServer,
-    navigate,
-    user,
-    openAuthModal,
-  } = useShopStore();
+  // Use individual selectors to prevent unnecessary re-renders
+  const cartItems = useShopStore((s) => s.cartItems);
+  const cartTotal = useShopStore((s) => s.cartTotal);
+  const cartCount = useShopStore((s) => s.cartCount);
+  const sessionId = useShopStore((s) => s.sessionId);
+  const updateQuantity = useShopStore((s) => s.updateQuantity);
+  const removeFromCart = useShopStore((s) => s.removeFromCart);
+  const setCartFromServer = useShopStore((s) => s.setCartFromServer);
+  const navigate = useShopStore((s) => s.navigate);
+  const user = useShopStore((s) => s.user);
+  const openAuthModal = useShopStore((s) => s.openAuthModal);
 
   // Sync cart from server on mount
   useEffect(() => {

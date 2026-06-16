@@ -1,6 +1,5 @@
 'use client';
 
-import { AnimatePresence, motion } from 'framer-motion';
 import { useShopStore } from '@/store/use-shop-store';
 import { Header } from '@/components/shop/header';
 import { Footer } from '@/components/shop/footer';
@@ -44,17 +43,7 @@ export default function Home() {
     <div className="min-h-screen flex flex-col bg-background">
       <Header />
       <main className="flex-1">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={view}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.2 }}
-          >
-            <ViewRenderer view={view} />
-          </motion.div>
-        </AnimatePresence>
+        <ViewRenderer view={view} />
       </main>
       <Footer />
       <AuthModal />

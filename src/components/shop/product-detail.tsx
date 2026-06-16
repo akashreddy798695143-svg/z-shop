@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Minus, Plus, ShoppingCart, Truck, RotateCcw, Shield, Check } from 'lucide-react';
 import { useShopStore } from '@/store/use-shop-store';
@@ -31,8 +31,15 @@ export function ProductDetail() {
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
   const [addedToCart, setAddedToCart] = useState(false);
+  const addedToCartTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const { selectedProductId, navigate, addToCart, sessionId, user, openAuthModal } = useShopStore();
+  // Use individual selectors to prevent unnecessary re-renders
+  const selectedProductId = useShopStore((s) => s.selectedProductId);
+  const navigate = useShopStore((s) => s.navigate);
+  const addToCart = useShopStore((s) => s.addToCart);
+  const sessionId = useShopStore((s) => s.sessionId);
+  const user = useShopStore((s) => s.user);
+  const openAuthModal = useShopStore((s) => s.openAuthModal);
 
   useEffect(() => {
     if (!selectedProductId) return;
@@ -94,8 +101,20 @@ export function ProductDetail() {
       description: `${quantity} × ${product.name} has been added to your cart.`,
     });
 
-    setTimeout(() => setAddedToCart(false), 2000);
+    if (addedToCartTimeoutRef.current) {
+      clearTimeout(addedToCartTimeoutRef.current);
+    }
+    addedToCartTimeoutRef.current = setTimeout(() => setAddedToCart(false), 2000);
   };
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (addedToCartTimeoutRef.current) {
+        clearTimeout(addedToCartTimeoutRef.current);
+      }
+    };
+  }, []);
 
   if (loading) {
     return (
@@ -129,10 +148,7 @@ export function ProductDetail() {
     : 0;
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ duration: 0.3 }}
+    <div
       className="container mx-auto px-4 py-8"
     >
       {/* Back Button */}
@@ -301,6 +317,6 @@ export function ProductDetail() {
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
